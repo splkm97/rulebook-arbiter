@@ -32,7 +32,7 @@ class TestSettingsEndpoint:
         assert response.status_code == 200
         data = response.json()
         assert "model" in data
-        assert data["model"] == "gemini-2.0-flash"
+        assert data["model"] == "gemini-3-flash-preview"
         assert "available_models" in data
         assert isinstance(data["available_models"], list)
         assert len(data["available_models"]) >= 2
@@ -44,12 +44,12 @@ class TestSettingsEndpoint:
         response = app_client.put(
             "/api/settings",
             params={"session_id": session_id},
-            json={"model": "gemini-2.0-pro"},
+            json={"model": "gemini-3-pro-preview"},
         )
 
         assert response.status_code == 200
         data = response.json()
-        assert data["model"] == "gemini-2.0-pro"
+        assert data["model"] == "gemini-3-pro-preview"
 
     def test_update_settings_invalid_model(self, app_client) -> None:
         """PUT with an invalid model name yields 400."""

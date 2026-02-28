@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from io import BytesIO
 
+from app.errors.handlers import LLMError
 from tests.conftest import create_pdf_with_text
 
 
@@ -50,7 +51,7 @@ class TestChatEndpoint:
         assert response.status_code == 404
 
     def test_chat_empty_message(self, app_client) -> None:
-        """An empty message string still returns a response (context-based)."""
+        """An empty message is rejected by input validation (min_length=1)."""
         session_id = _upload_pdf(app_client)
 
         response = app_client.post(
@@ -58,7 +59,50 @@ class TestChatEndpoint:
             json={"session_id": session_id, "message": ""},
         )
 
-        # The endpoint should still process (LLM generates from context)
-        assert response.status_code == 200
+        assert response.status_code == 422
+
+
+class TestChatEmbeddingFailure:
+    """Embedding API errors during chat should surface as HTTP 502."""
+
+    def test_chat_returns_502_when_embedding_model_not_found(
+        self, app_client, mock_llm_service
+    ) -> None:
+        """If the embedding model 404s during query embedding, chat returns 502."""
+        # First upload succeeds (embed works during upload)
+        session_id = _upload_pdf(app_client)
+
+        # Now break embed for the chat query
+        mock_llm_service.embed.side_effect = LLMError(
+            "Embedding failed: 404 NOT_FOUND. models/text-embedding-004 is not found"
+        )
+
+        response = app_client.post(
+            "/api/chat",
+            json={"session_id": session_id, "message": "How do I set up?"},
+        )
+
+        assert response.status_code == 502
         data = response.json()
-        assert "answer" in data
+        assert "error" in data
+        assert "Embedding failed" in data["error"]
+
+    def test_chat_returns_502_when_generation_fails(
+        self, app_client, mock_llm_service
+    ) -> None:
+        """If the generation model fails after retrieval, chat returns 502."""
+        session_id = _upload_pdf(app_client)
+
+        # Embed still works but generation fails
+        mock_llm_service.generate.side_effect = LLMError(
+            "Gemini generation failed: 404 NOT_FOUND"
+        )
+
+        response = app_client.post(
+            "/api/chat",
+            json={"session_id": session_id, "message": "How do I set up?"},
+        )
+
+        assert response.status_code == 502
+        data = response.json()
+        assert "error" in data

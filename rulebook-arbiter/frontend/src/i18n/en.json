@@ -14,12 +14,28 @@
   "chat": {
     "placeholder": "Ask about the rules...",
     "send": "Send",
+    "shortcut": "Ctrl+Enter / Cmd+Enter",
     "empty": "Upload a rulebook and start asking questions",
     "emptyHint": "Upload a PDF rulebook from the sidebar"
   },
   "settings": {
     "model": "Model",
     "language": "Language"
+  },
+  "preset": {
+    "label": "Mode",
+    "learn": {
+      "name": "Learn Game",
+      "description": "Learn complete rules step by step"
+    },
+    "setup": {
+      "name": "Game Setup",
+      "description": "Guide through pre-game setup"
+    },
+    "arbiter": {
+      "name": "Rule Arbiter",
+      "description": "Judge rule disputes accurately"
+    }
   },
   "session": {
     "pages": "pages",

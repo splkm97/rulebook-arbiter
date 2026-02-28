@@ -29,7 +29,7 @@ export const MOCK_CHAT_RESPONSE = {
       score: 0.85,
     },
   ],
-  model_used: 'gemini-2.0-flash',
+  model_used: 'gemini-3-flash-preview',
 } as const
 
 export const MOCK_SOURCE_DETAIL = {
@@ -40,8 +40,10 @@ export const MOCK_SOURCE_DETAIL = {
 } as const
 
 export const MOCK_SETTINGS_RESPONSE = {
-  model: 'gemini-2.0-flash',
-  available_models: ['gemini-2.0-flash', 'gemini-2.0-pro'],
+  model: 'gemini-3-flash-preview',
+  available_models: ['gemini-3-flash-preview', 'gemini-3-pro-preview'],
+  preset: 'arbiter',
+  available_presets: ['learn', 'setup', 'arbiter'],
 } as const
 
 /**
@@ -90,6 +92,25 @@ export async function mockAllApiRoutes(page: Page): Promise<void> {
     (route) => route.fulfill({ json: MOCK_SOURCE_DETAIL }),
   )
 
+  // Sessions — GET /api/sessions/:sessionId
+  await page.route(
+    (url) =>
+      isApiEndpoint(url.toString()) &&
+      url.pathname.startsWith('/api/sessions/'),
+    (route) =>
+      route.fulfill({
+        json: {
+          session_id: MOCK_SESSION_ID,
+          title: MOCK_TITLE,
+          total_pages: 12,
+          total_chunks: 24,
+          model: 'gemini-3-flash-preview',
+          preset: 'arbiter',
+          conversation: [],
+        },
+      }),
+  )
+
   // Settings — GET and PUT /api/settings
   await page.route(
     (url) =>
@@ -99,9 +120,14 @@ export async function mockAllApiRoutes(page: Page): Promise<void> {
       if (route.request().method() === 'GET') {
         return route.fulfill({ json: MOCK_SETTINGS_RESPONSE })
       }
-      // PUT returns the updated model
+      // PUT returns the updated settings
+      const body = route.request().postDataJSON() as Record<string, unknown>
       return route.fulfill({
-        json: { ...MOCK_SETTINGS_RESPONSE, model: 'gemini-2.0-pro' },
+        json: {
+          ...MOCK_SETTINGS_RESPONSE,
+          ...(body.model ? { model: body.model } : {}),
+          ...(body.preset ? { preset: body.preset } : {}),
+        },
       })
     },
   )

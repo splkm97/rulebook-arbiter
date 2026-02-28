@@ -1,13 +1,24 @@
 from google import genai
+from google.genai import errors as genai_errors
 from google.genai import types
 from tenacity import (
     retry,
-    retry_if_exception_type,
+    retry_if_exception,
     stop_after_attempt,
     wait_exponential,
 )
 
 from app.errors.handlers import LLMError
+
+
+def _is_retryable(exc: BaseException) -> bool:
+    """Return True only for transient errors worth retrying."""
+    if isinstance(exc, LLMError):
+        return False
+    if isinstance(exc, genai_errors.APIError):
+        return exc.code in (429, 500, 502, 503, 504)
+    # Unknown exceptions (network errors, timeouts) are retryable
+    return True
 
 
 class LLMService:
@@ -19,7 +30,7 @@ class LLMService:
     @retry(
         stop=stop_after_attempt(3),
         wait=wait_exponential(min=1, max=10),
-        retry=retry_if_exception_type(Exception),
+        retry=retry_if_exception(_is_retryable),
         reraise=True,
     )
     def generate(

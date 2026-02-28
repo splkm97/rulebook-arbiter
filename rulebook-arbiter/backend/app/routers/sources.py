@@ -1,5 +1,6 @@
 from fastapi import APIRouter, HTTPException, Query, Request
 
+from app.models.domain import DEFAULT_SECTION
 from app.models.schemas import SourceDetailResponse
 
 router = APIRouter()
@@ -26,5 +27,5 @@ async def get_source_detail(
         chunk_id=chunk.chunk_id,
         text=chunk.text,
         page=chunk.page_number,
-        section=chunk.section_title,
+        section=chunk.section_title or DEFAULT_SECTION,
     )

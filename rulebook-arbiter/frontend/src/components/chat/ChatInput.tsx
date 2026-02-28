@@ -9,7 +9,7 @@ interface ChatInputProps {
 }
 
 const MAX_ROWS = 6
-const LINE_HEIGHT = 20
+const LINE_HEIGHT = 26
 
 export function ChatInput({ onSend }: ChatInputProps) {
   const { t } = useTranslation()
@@ -70,7 +70,7 @@ export function ChatInput({ onSend }: ChatInputProps) {
           disabled={isDisabled}
           rows={1}
           aria-label={t('chat.placeholder')}
-          className="min-h-[36px] flex-1 resize-none rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-800 placeholder-slate-400 transition-colors duration-150 focus:border-blue-500 focus:bg-white focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-200 dark:placeholder-slate-500 dark:focus:border-blue-400 dark:focus:bg-slate-700"
+          className="min-h-[48px] flex-1 resize-none rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-800 placeholder-slate-400 transition-colors duration-150 focus:border-blue-500 focus:bg-white focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-200 dark:placeholder-slate-500 dark:focus:border-blue-400 dark:focus:bg-slate-700"
         />
         <button
           type="button"
@@ -82,8 +82,8 @@ export function ChatInput({ onSend }: ChatInputProps) {
           <SendHorizontal className="h-4 w-4" aria-hidden="true" />
         </button>
       </div>
-      <p className="mt-1 text-center text-[10px] text-slate-400 dark:text-slate-500">
-        Ctrl+Enter / Cmd+Enter
+      <p className="mt-1 text-center text-[13px] text-slate-400 dark:text-slate-500">
+        {t('chat.shortcut')}
       </p>
     </div>
   )

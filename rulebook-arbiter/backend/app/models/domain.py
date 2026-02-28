@@ -1,5 +1,7 @@
 from dataclasses import dataclass
 
+DEFAULT_SECTION = "General"
+
 
 @dataclass(frozen=True)
 class Chunk:

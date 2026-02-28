@@ -3,6 +3,22 @@ export interface UploadResponse {
   readonly title: string
   readonly total_pages: number
   readonly total_chunks: number
+  readonly duplicate?: boolean
+}
+
+export interface ConversationTurn {
+  readonly role: 'user' | 'assistant'
+  readonly content: string
+}
+
+export interface SessionMetadataResponse {
+  readonly session_id: string
+  readonly title: string
+  readonly total_pages: number
+  readonly total_chunks: number
+  readonly model: string
+  readonly preset: string
+  readonly conversation: readonly ConversationTurn[]
 }
 
 export interface SourceInfo {
@@ -29,6 +45,8 @@ export interface SourceDetail {
 export interface SettingsResponse {
   readonly model: string
   readonly available_models: readonly string[]
+  readonly preset: string
+  readonly available_presets: readonly string[]
 }
 
 export interface ChatMessage {

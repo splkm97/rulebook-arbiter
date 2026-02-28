@@ -9,6 +9,7 @@ interface ChatState {
     content: string,
     sources: readonly SourceInfo[],
   ) => void
+  readonly setMessages: (messages: readonly ChatMessage[]) => void
   readonly setLoading: (loading: boolean) => void
   readonly clearMessages: () => void
 }
@@ -41,6 +42,8 @@ export const useChatStore = create<ChatState>((set) => ({
       ],
     }))
   },
+
+  setMessages: (messages) => set({ messages }),
 
   setLoading: (loading) => set({ isLoading: loading }),
 

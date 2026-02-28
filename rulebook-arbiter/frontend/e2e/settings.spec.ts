@@ -16,8 +16,8 @@ test.describe('Settings', () => {
     // Should have both model options
     const options = select.locator('option')
     await expect(options).toHaveCount(2)
-    await expect(options.nth(0)).toHaveText('gemini-2.0-flash')
-    await expect(options.nth(1)).toHaveText('gemini-2.0-pro')
+    await expect(options.nth(0)).toHaveText('gemini-3-flash-preview')
+    await expect(options.nth(1)).toHaveText('gemini-3-pro-preview')
   })
 
   test('model selector changes model', async ({ page }) => {
@@ -30,12 +30,12 @@ test.describe('Settings', () => {
     )
 
     // Select a different model
-    await select.selectOption('gemini-2.0-pro')
+    await select.selectOption('gemini-3-pro-preview')
 
     // Verify the PUT request was sent
     const putRequest = await putPromise
     const body = putRequest.postDataJSON()
-    expect(body).toEqual({ model: 'gemini-2.0-pro' })
+    expect(body).toEqual({ model: 'gemini-3-pro-preview' })
   })
 
   test('language toggle switches to English', async ({ page }) => {

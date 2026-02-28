@@ -2,7 +2,7 @@ import { useCallback } from 'react'
 import { useMutation } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import { ChevronDown } from 'lucide-react'
-import { updateSettings } from '@/api/settings'
+import { updateModel } from '@/api/settings'
 import { useSessionStore } from '@/stores/session-store'
 import { useSettingsStore } from '@/stores/settings-store'
 
@@ -13,23 +13,32 @@ export function ModelSelector() {
   const availableModels = useSettingsStore((s) => s.availableModels)
   const setModel = useSettingsStore((s) => s.setModel)
 
-  const mutation = useMutation({
+  const { mutate, isPending } = useMutation({
     mutationFn: (newModel: string) => {
       if (!sessionId) throw new Error('No session')
-      return updateSettings(sessionId, newModel)
+      return updateModel(sessionId, newModel)
     },
     onSuccess: (data) => {
       setModel(data.model)
+    },
+    onError: (_error, _newModel, context) => {
+      // Rollback to previous model on failure
+      if (context?.previousModel) {
+        setModel(context.previousModel)
+      }
+    },
+    onMutate: (newModel) => {
+      const previousModel = model
+      setModel(newModel)
+      return { previousModel }
     },
   })
 
   const handleChange = useCallback(
     (e: React.ChangeEvent<HTMLSelectElement>) => {
-      const newModel = e.target.value
-      setModel(newModel)
-      mutation.mutate(newModel)
+      mutate(e.target.value)
     },
-    [mutation, setModel],
+    [mutate],
   )
 
   if (!sessionId || availableModels.length === 0) {
@@ -49,7 +58,7 @@ export function ModelSelector() {
           id="model-selector"
           value={model}
           onChange={handleChange}
-          disabled={mutation.isPending}
+          disabled={isPending}
           className="appearance-none rounded-md border border-slate-200 bg-white px-2.5 py-1 pr-7 text-xs font-medium text-slate-700 transition-colors duration-150 hover:border-slate-300 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-200 dark:hover:border-slate-500 dark:focus:border-blue-400 dark:focus:ring-blue-400"
         >
           {availableModels.map((m) => (

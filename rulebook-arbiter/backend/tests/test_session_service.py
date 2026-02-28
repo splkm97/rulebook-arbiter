@@ -74,8 +74,8 @@ class TestAddTurn:
 
         session = svc.get_session("s1")
         assert len(session.conversation) == 2
-        assert session.conversation[0]["role"] == "user"
-        assert session.conversation[1]["role"] == "assistant"
+        assert session.conversation[0].role == "user"
+        assert session.conversation[1].role == "assistant"
 
     def test_add_turn_caps_at_max(self, svc: SessionService, three_chunks) -> None:
         """When conversation exceeds max_turns pairs, oldest pair is removed."""
@@ -92,7 +92,7 @@ class TestAddTurn:
         assert len(session.conversation) <= max_turns * 2
 
         # The oldest pair (Q0/A0) should have been removed
-        contents = [t["content"] for t in session.conversation]
+        contents = [t.content for t in session.conversation]
         assert "Q0" not in contents
 
     def test_add_turn_not_found(self, svc: SessionService) -> None:
@@ -121,6 +121,56 @@ class TestChunkMap:
         assert "c1" in session.chunks
         assert session.chunks["c1"].text == "t1"
         assert session.chunks["c3"].section_title is None
+
+
+class TestFindByHash:
+    """Duplicate detection via PDF content hash."""
+
+    def test_find_by_hash_returns_none_when_empty(
+        self, svc: SessionService
+    ) -> None:
+        """No sessions registered → None."""
+        assert svc.find_session_by_hash("abc123") is None
+
+    def test_find_by_hash_returns_session_on_match(
+        self, svc: SessionService, three_chunks
+    ) -> None:
+        """Session created with a hash can be retrieved by that hash."""
+        svc.create_session(
+            session_id="s-hash",
+            title="T",
+            total_pages=1,
+            chunks=three_chunks,
+            pdf_hash="deadbeef",
+        )
+        found = svc.find_session_by_hash("deadbeef")
+        assert found is not None
+        assert found.session_id == "s-hash"
+
+    def test_find_by_hash_returns_none_for_different_hash(
+        self, svc: SessionService, three_chunks
+    ) -> None:
+        """Looking up a hash that doesn't match any session → None."""
+        svc.create_session(
+            session_id="s-other",
+            title="T",
+            total_pages=1,
+            chunks=three_chunks,
+            pdf_hash="aaa",
+        )
+        assert svc.find_session_by_hash("bbb") is None
+
+    def test_find_by_hash_without_hash_is_not_findable(
+        self, svc: SessionService, three_chunks
+    ) -> None:
+        """Sessions created without a hash are never matched."""
+        svc.create_session(
+            session_id="s-nohash",
+            title="T",
+            total_pages=1,
+            chunks=three_chunks,
+        )
+        assert svc.find_session_by_hash("anything") is None
 
 
 class TestThreadSafety:

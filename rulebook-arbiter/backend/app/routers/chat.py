@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Request
 
+from app.models.domain import DEFAULT_SECTION
 from app.models.schemas import ChatRequest, ChatResponse, SourceInfo
 
 router = APIRouter()
@@ -18,7 +19,7 @@ async def chat(body: ChatRequest, request: Request) -> ChatResponse:
         SourceInfo(
             chunk_id=ctx.chunk.chunk_id,
             page=ctx.chunk.page_number,
-            section=ctx.chunk.section_title,
+            section=ctx.chunk.section_title or DEFAULT_SECTION,
             label=ctx.label,
             score=round(ctx.score, 4),
         )

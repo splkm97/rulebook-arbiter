@@ -18,7 +18,7 @@ export function MainLayout() {
   return (
     <div className="flex h-screen w-screen overflow-hidden bg-white dark:bg-slate-900">
       {/* Desktop sidebar */}
-      <div className="hidden w-[280px] shrink-0 md:block">
+      <div className="hidden w-[364px] shrink-0 md:block">
         <Sidebar />
       </div>
 
@@ -30,7 +30,7 @@ export function MainLayout() {
           role="presentation"
         >
           <div
-            className="h-full w-[280px]"
+            className="h-full w-[364px]"
             onClick={(e) => e.stopPropagation()}
           >
             <Sidebar />

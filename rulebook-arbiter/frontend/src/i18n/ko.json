@@ -14,12 +14,28 @@
   "chat": {
     "placeholder": "규칙에 대해 질문하세요...",
     "send": "보내기",
+    "shortcut": "Ctrl+Enter / Cmd+Enter",
     "empty": "룰북을 업로드하고 질문을 시작하세요",
     "emptyHint": "사이드바에서 PDF 룰북을 업로드하세요"
   },
   "settings": {
     "model": "모델",
     "language": "언어"
+  },
+  "preset": {
+    "label": "모드",
+    "learn": {
+      "name": "게임 배우기",
+      "description": "규칙을 단계별로 쉽게 배워요"
+    },
+    "setup": {
+      "name": "게임 셋업",
+      "description": "게임 시작 전 준비를 안내해요"
+    },
+    "arbiter": {
+      "name": "룰 심판관",
+      "description": "규칙 분쟁을 정확하게 판정해요"
+    }
   },
   "session": {
     "pages": "페이지",

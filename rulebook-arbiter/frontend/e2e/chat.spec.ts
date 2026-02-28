@@ -73,7 +73,7 @@ test.describe('Chat', () => {
           json: {
             answer: 'Test response',
             sources: [],
-            model_used: 'gemini-2.0-flash',
+            model_used: 'gemini-3-flash-preview',
           },
         })
       },

@@ -198,13 +198,13 @@ def app_client(mock_llm_service, tmp_path):
     from fastapi.middleware.cors import CORSMiddleware
 
     from app.errors.handlers import register_exception_handlers
-    from app.routers import chat, settings, sources, upload
+    from app.routers import chat, sessions, settings, sources, upload
     from app.services.retrieval_service import RetrievalService
 
     app_settings = Settings(
         gemini_api_key="test-key",
         chromadb_path=str(tmp_path / "chromadb"),
-        generation_model="gemini-2.0-flash",
+        generation_model="gemini-3-flash-preview",
     )
 
     chroma_client = chromadb.EphemeralClient()
@@ -234,6 +234,7 @@ def app_client(mock_llm_service, tmp_path):
     test_app.include_router(chat.router, prefix="/api")
     test_app.include_router(sources.router, prefix="/api")
     test_app.include_router(settings.router, prefix="/api")
+    test_app.include_router(sessions.router, prefix="/api")
 
     @test_app.get("/api/health")
     async def health() -> dict[str, str]:

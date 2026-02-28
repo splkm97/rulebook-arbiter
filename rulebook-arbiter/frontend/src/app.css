@@ -9,6 +9,7 @@
 
 /* Base styles */
 html {
+  font-size: 130%;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }

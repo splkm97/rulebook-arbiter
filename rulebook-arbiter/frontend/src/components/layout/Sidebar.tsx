@@ -8,6 +8,7 @@ import {
   BookOpen,
 } from 'lucide-react'
 import { useSessionStore } from '@/stores/session-store'
+import { useSettingsStore } from '@/stores/settings-store'
 import { useChatStore } from '@/stores/chat-store'
 import { UploadModal } from '@/components/upload/UploadModal'
 
@@ -19,6 +20,10 @@ export function Sidebar() {
   const totalPages = useSessionStore((s) => s.totalPages)
   const totalChunks = useSessionStore((s) => s.totalChunks)
   const clearSession = useSessionStore((s) => s.clearSession)
+  const setModel = useSettingsStore((s) => s.setModel)
+  const setPreset = useSettingsStore((s) => s.setPreset)
+  const setAvailableModels = useSettingsStore((s) => s.setAvailableModels)
+  const setAvailablePresets = useSettingsStore((s) => s.setAvailablePresets)
   const clearMessages = useChatStore((s) => s.clearMessages)
 
   const handleOpenUpload = useCallback(() => {
@@ -32,7 +37,11 @@ export function Sidebar() {
   const handleNewSession = useCallback(() => {
     clearSession()
     clearMessages()
-  }, [clearSession, clearMessages])
+    setModel('')
+    setPreset('arbiter')
+    setAvailableModels([])
+    setAvailablePresets([])
+  }, [clearSession, clearMessages, setModel, setPreset, setAvailableModels, setAvailablePresets])
 
   return (
     <>
@@ -51,7 +60,7 @@ export function Sidebar() {
         {sessionId && (
           <div className="flex-1 overflow-y-auto px-3 pb-3">
             <div className="rounded-lg border border-slate-200 bg-white p-3 dark:border-slate-700 dark:bg-slate-800">
-              <h3 className="mb-2.5 text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+              <h3 className="mb-2.5 text-[13px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
                 {t('session.info')}
               </h3>
 

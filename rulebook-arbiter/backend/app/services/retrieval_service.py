@@ -1,20 +1,9 @@
 from app.config import Settings
 from app.models.domain import ContextChunk, RetrievalResult
+from app.models.presets import DEFAULT_PRESET, PRESETS
 from app.services.llm_service import LLMService
 from app.services.session_service import SessionService
 from app.services.vector_service import VectorService
-
-SYSTEM_PROMPT = """\
-You are a board game rulebook expert. Answer questions based ONLY on the provided rulebook context.
-
-Rules:
-1. Use ONLY the provided context to answer. If the context doesn't contain the answer, say so explicitly.
-2. ALWAYS include inline citations using the format [p.X, §Y] where X is the page number and Y is the section name.
-3. If a rule is ambiguous, present multiple interpretations and cite each.
-4. Match the user's language (Korean or English).
-5. For complex rules, structure your answer with bullet points or numbered steps.
-6. If asked about rules not in the provided context, explicitly state that the information is not available in the uploaded rulebook.
-"""
 
 
 class RetrievalService:
@@ -99,8 +88,10 @@ class RetrievalService:
         context_block = "\n\n---\n\n".join(context_parts)
 
         # 4. Build messages from conversation history + new query
+        #    Use snapshot to avoid iterating a mutable list without lock (H2)
+        conversation = self._sessions.get_conversation_snapshot(session_id)
         messages: list[dict] = []
-        for turn in session.conversation:
+        for turn in conversation:
             role = "model" if turn["role"] == "assistant" else turn["role"]
             messages.append({"role": role, "text": turn["content"]})
 
@@ -111,13 +102,14 @@ class RetrievalService:
         )
         messages.append({"role": "user", "text": user_message})
 
-        # 5. Generate
+        # 5. Generate — use the session's active preset for prompt + params
+        preset = PRESETS.get(session.preset, PRESETS[DEFAULT_PRESET])
         answer = self._llm.generate(
             model=session.model,
-            system_prompt=SYSTEM_PROMPT,
+            system_prompt=preset.system_prompt,
             messages=messages,
-            temperature=self._settings.generation_temperature,
-            top_p=self._settings.generation_top_p,
+            temperature=preset.temperature,
+            top_p=preset.top_p,
             max_tokens=self._settings.generation_max_output_tokens,
         )
 

@@ -7,7 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import Settings
 from app.errors.handlers import register_exception_handlers
-from app.routers import chat, settings, sources, upload
+from app.routers import chat, sessions, settings, sources, upload
 from app.services.llm_service import LLMService
 from app.services.retrieval_service import RetrievalService
 from app.services.session_service import SessionService
@@ -73,6 +73,7 @@ app.include_router(upload.router, prefix="/api")
 app.include_router(chat.router, prefix="/api")
 app.include_router(sources.router, prefix="/api")
 app.include_router(settings.router, prefix="/api")
+app.include_router(sessions.router, prefix="/api")
 
 
 @app.get("/api/health")

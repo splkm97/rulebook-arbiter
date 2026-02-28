@@ -1,3 +1,4 @@
+import hashlib
 import uuid
 
 from fastapi import APIRouter, Request, UploadFile
@@ -10,6 +11,7 @@ from app.services.pdf_service import detect_title, extract_pages
 router = APIRouter()
 
 PDF_MAGIC_BYTES = b"%PDF"
+MAX_UPLOAD_BYTES = 50 * 1024 * 1024  # 50 MB
 
 
 @router.post("/upload", response_model=UploadResponse)
@@ -23,9 +25,27 @@ async def upload_rulebook(file: UploadFile, request: Request) -> UploadResponse:
 
     pdf_bytes = await file.read()
 
+    if len(pdf_bytes) > MAX_UPLOAD_BYTES:
+        raise InvalidPDFError(
+            f"File exceeds maximum size of {MAX_UPLOAD_BYTES // (1024 * 1024)}MB"
+        )
+
     # Validate magic bytes
     if not pdf_bytes[:4].startswith(PDF_MAGIC_BYTES):
         raise InvalidPDFError("File does not appear to be a valid PDF")
+
+    # Duplicate detection via content hash
+    pdf_hash = hashlib.sha256(pdf_bytes).hexdigest()
+    session_service = request.app.state.session_service
+    existing = session_service.find_session_by_hash(pdf_hash)
+    if existing is not None:
+        return UploadResponse(
+            session_id=existing.session_id,
+            title=existing.title,
+            total_pages=existing.total_pages,
+            total_chunks=existing.total_chunks,
+            duplicate=True,
+        )
 
     # Extract pages
     pages = extract_pages(pdf_bytes)
@@ -63,12 +83,12 @@ async def upload_rulebook(file: UploadFile, request: Request) -> UploadResponse:
     vector_service.create_collection(session_id)
     vector_service.index_chunks(session_id, chunks, embeddings)
 
-    session_service = request.app.state.session_service
     session_service.create_session(
         session_id=session_id,
         title=title,
         total_pages=len(pages),
         chunks=chunks,
+        pdf_hash=pdf_hash,
     )
 
     return UploadResponse(
