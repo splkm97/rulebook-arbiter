@@ -1,0 +1,41 @@
+{
+  "header": {
+    "title": "룰북 심판관"
+  },
+  "upload": {
+    "button": "룰북 업로드",
+    "title": "PDF 룰북 업로드",
+    "dropzone": "PDF 파일을 여기에 드롭하거나 클릭하여 선택하세요",
+    "processing": "처리 중...",
+    "maxSize": "최대 50MB",
+    "selected": "선택된 파일",
+    "confirm": "업로드"
+  },
+  "chat": {
+    "placeholder": "규칙에 대해 질문하세요...",
+    "send": "보내기",
+    "empty": "룰북을 업로드하고 질문을 시작하세요",
+    "emptyHint": "사이드바에서 PDF 룰북을 업로드하세요"
+  },
+  "settings": {
+    "model": "모델",
+    "language": "언어"
+  },
+  "session": {
+    "pages": "페이지",
+    "chunks": "청크",
+    "new": "새 세션",
+    "info": "세션 정보"
+  },
+  "source": {
+    "page": "페이지",
+    "section": "섹션",
+    "loading": "소스 불러오는 중...",
+    "error": "소스를 불러올 수 없습니다"
+  },
+  "error": {
+    "upload": "업로드 실패",
+    "chat": "메시지 전송 실패",
+    "generic": "오류가 발생했습니다"
+  }
+}

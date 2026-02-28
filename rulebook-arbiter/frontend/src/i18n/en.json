@@ -1,0 +1,41 @@
+{
+  "header": {
+    "title": "Rulebook Arbiter"
+  },
+  "upload": {
+    "button": "Upload Rulebook",
+    "title": "Upload PDF Rulebook",
+    "dropzone": "Drop a PDF file here or click to select",
+    "processing": "Processing...",
+    "maxSize": "Max 50MB",
+    "selected": "Selected file",
+    "confirm": "Upload"
+  },
+  "chat": {
+    "placeholder": "Ask about the rules...",
+    "send": "Send",
+    "empty": "Upload a rulebook and start asking questions",
+    "emptyHint": "Upload a PDF rulebook from the sidebar"
+  },
+  "settings": {
+    "model": "Model",
+    "language": "Language"
+  },
+  "session": {
+    "pages": "pages",
+    "chunks": "chunks",
+    "new": "New Session",
+    "info": "Session Info"
+  },
+  "source": {
+    "page": "Page",
+    "section": "Section",
+    "loading": "Loading source...",
+    "error": "Failed to load source"
+  },
+  "error": {
+    "upload": "Upload failed",
+    "chat": "Failed to send message",
+    "generic": "An error occurred"
+  }
+}
