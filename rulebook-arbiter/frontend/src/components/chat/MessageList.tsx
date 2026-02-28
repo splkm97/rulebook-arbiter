@@ -48,9 +48,19 @@ export function MessageList() {
       aria-label="Chat messages"
     >
       <div className="flex flex-col py-2">
-        {messages.map((msg) => (
-          <Message key={msg.id} message={msg} />
-        ))}
+        {messages.map((msg, idx) => {
+          // For assistant messages, find the preceding user query
+          let query = ''
+          if (msg.role === 'assistant') {
+            for (let j = idx - 1; j >= 0; j--) {
+              if (messages[j]?.role === 'user') {
+                query = messages[j].content
+                break
+              }
+            }
+          }
+          return <Message key={msg.id} message={msg} query={query} />
+        })}
         {isLoading && <TypingIndicator />}
       </div>
     </div>

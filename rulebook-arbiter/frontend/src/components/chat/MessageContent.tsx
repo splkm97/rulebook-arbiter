@@ -7,6 +7,8 @@ import type { SourceInfo } from '@/types'
 interface MessageContentProps {
   readonly content: string
   readonly sources?: readonly SourceInfo[]
+  /** User query for source text highlighting */
+  readonly query?: string
 }
 
 function findSourceForCitation(
@@ -24,6 +26,7 @@ function findSourceForCitation(
 function renderTextWithCitations(
   text: string,
   sources: readonly SourceInfo[],
+  query: string,
 ): ReactNode[] {
   const parts = splitByCitations(text)
   const citations = parseCitations(text)
@@ -44,6 +47,7 @@ function renderTextWithCitations(
             key={`citation-${i}`}
             citationText={part.value}
             source={source}
+            query={query}
           />
         )
       }
@@ -52,7 +56,7 @@ function renderTextWithCitations(
   })
 }
 
-export function MessageContent({ content, sources = [] }: MessageContentProps) {
+export function MessageContent({ content, sources = [], query = '' }: MessageContentProps) {
   const hasCitations = useMemo(
     () => parseCitations(content).length > 0,
     [content],
@@ -72,18 +76,18 @@ export function MessageContent({ content, sources = [] }: MessageContentProps) {
         components={{
           p: ({ children }) => {
             if (typeof children === 'string') {
-              return <p>{renderTextWithCitations(children, sources)}</p>
+              return <p>{renderTextWithCitations(children, sources, query)}</p>
             }
 
-            const processed = processChildren(children, sources)
+            const processed = processChildren(children, sources, query)
             return <p>{processed}</p>
           },
           li: ({ children }) => {
             if (typeof children === 'string') {
-              return <li>{renderTextWithCitations(children, sources)}</li>
+              return <li>{renderTextWithCitations(children, sources, query)}</li>
             }
 
-            const processed = processChildren(children, sources)
+            const processed = processChildren(children, sources, query)
             return <li>{processed}</li>
           },
         }}
@@ -97,9 +101,10 @@ export function MessageContent({ content, sources = [] }: MessageContentProps) {
 function processChildren(
   children: ReactNode,
   sources: readonly SourceInfo[],
+  query: string,
 ): ReactNode {
   if (typeof children === 'string') {
-    return renderTextWithCitations(children, sources)
+    return renderTextWithCitations(children, sources, query)
   }
 
   if (Array.isArray(children)) {
@@ -107,7 +112,7 @@ function processChildren(
       if (typeof child === 'string') {
         return (
           <span key={i}>
-            {renderTextWithCitations(child, sources)}
+            {renderTextWithCitations(child, sources, query)}
           </span>
         )
       }

@@ -47,7 +47,12 @@
     "page": "페이지",
     "section": "섹션",
     "loading": "소스 불러오는 중...",
-    "error": "소스를 불러올 수 없습니다"
+    "error": "소스를 불러올 수 없습니다",
+    "relevance": {
+      "high": "높음",
+      "medium": "보통",
+      "low": "낮음"
+    }
   },
   "error": {
     "upload": "업로드 실패",

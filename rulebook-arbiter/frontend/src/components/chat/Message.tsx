@@ -5,9 +5,11 @@ import type { ChatMessage } from '@/types'
 
 interface MessageProps {
   readonly message: ChatMessage
+  /** The user query that triggered this assistant response (empty for user messages) */
+  readonly query?: string
 }
 
-export const Message = memo(function Message({ message }: MessageProps) {
+export const Message = memo(function Message({ message, query = '' }: MessageProps) {
   const isUser = message.role === 'user'
 
   return (
@@ -44,6 +46,7 @@ export const Message = memo(function Message({ message }: MessageProps) {
           <MessageContent
             content={message.content}
             sources={message.sources}
+            query={query}
           />
         )}
       </div>

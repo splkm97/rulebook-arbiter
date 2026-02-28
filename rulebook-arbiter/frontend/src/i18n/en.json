@@ -47,7 +47,12 @@
     "page": "Page",
     "section": "Section",
     "loading": "Loading source...",
-    "error": "Failed to load source"
+    "error": "Failed to load source",
+    "relevance": {
+      "high": "High",
+      "medium": "Med",
+      "low": "Low"
+    }
   },
   "error": {
     "upload": "Upload failed",

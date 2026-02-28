@@ -2,14 +2,43 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { BookOpen, Loader2, X } from 'lucide-react'
 import { useCitation } from '@/hooks/use-citation'
+import { HighlightedText } from '@/components/chat/HighlightedText'
 import type { SourceInfo } from '@/types'
 
 interface CitationPopoverProps {
   readonly citationText: string
   readonly source?: SourceInfo
+  /** User query for sentence-level highlighting in chunk text */
+  readonly query?: string
 }
 
-export function CitationPopover({ citationText, source }: CitationPopoverProps) {
+function scoreToRelevanceLabel(
+  score: number,
+  t: (key: string) => string,
+): { label: string; color: string } {
+  if (score >= 0.7) {
+    return {
+      label: t('source.relevance.high'),
+      color: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300',
+    }
+  }
+  if (score >= 0.4) {
+    return {
+      label: t('source.relevance.medium'),
+      color: 'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300',
+    }
+  }
+  return {
+    label: t('source.relevance.low'),
+    color: 'bg-slate-100 text-slate-500 dark:bg-slate-700 dark:text-slate-400',
+  }
+}
+
+export function CitationPopover({
+  citationText,
+  source,
+  query = '',
+}: CitationPopoverProps) {
   const { t } = useTranslation()
   const [isOpen, setIsOpen] = useState(false)
   const [shouldFetch, setShouldFetch] = useState(false)
@@ -60,6 +89,11 @@ export function CitationPopover({ citationText, source }: CitationPopoverProps) 
     }
   }, [isOpen])
 
+  const relevance =
+    source?.score != null
+      ? scoreToRelevanceLabel(source.score, t)
+      : null
+
   return (
     <span className="relative inline-block">
       <button
@@ -93,6 +127,16 @@ export function CitationPopover({ citationText, source }: CitationPopoverProps) 
                       <span>{source.section}</span>
                     </>
                   )}
+                  {relevance && (
+                    <>
+                      <span className="text-slate-300 dark:text-slate-600">|</span>
+                      <span
+                        className={`rounded-full px-1.5 py-0.5 text-[10px] font-semibold ${relevance.color}`}
+                      >
+                        {relevance.label}
+                      </span>
+                    </>
+                  )}
                 </>
               )}
             </div>
@@ -124,7 +168,7 @@ export function CitationPopover({ citationText, source }: CitationPopoverProps) 
 
           {data && (
             <div className="max-h-48 overflow-y-auto rounded bg-slate-50 p-2.5 text-xs leading-relaxed text-slate-700 dark:bg-slate-700/50 dark:text-slate-300">
-              {data.text}
+              <HighlightedText text={data.text} query={query} />
             </div>
           )}
 
