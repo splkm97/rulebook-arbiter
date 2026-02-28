@@ -33,6 +33,8 @@ Thumbs.db
 htmlcov/
 test-results/
 .pytest_cache/
+playwright-report/
+demo-videos/
 
 # Build
 build/
